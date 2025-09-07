@@ -17,3 +17,7 @@ variable "aws_root_block_device_size" {
   default     = 8
 }
 
+variable "env" {
+  default = "dev"
+  type = string
+}

@@ -68,19 +68,30 @@ egress {
 # ec2 instance
 
 resource "aws_instance" "example" {
+  # count = 2
+
+  for_each = tomap({
+    instance1 = "t3.micro",
+    instance2 = "t3.micro"
+  })
   user_data = file("nginx.sh")
   key_name = "aws_key_pair.deployer.key_name"
   security_groups = [aws_security_group.mysecurity.name]
   ami           = var.aws_ami
-  instance_type = var.ec2_instance_type
+  instance_type = each.value
 
   tags = {
-    Name = "HelloWorld"
+    Name = each.key
   }
 
   root_block_device {
-    volume_size = var.aws_root_block_device_size
+    volume_size = var.env == "prd" ? 20 : var.aws_root_block_device_size
     volume_type = "gp3"
   }
 }
 
+resource "aws_instance" "new_instance" {
+  ami = "unknown"
+  instance_type = "unknown" # import id of server in this instance
+
+}
